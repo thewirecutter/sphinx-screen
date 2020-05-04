@@ -41,6 +41,8 @@ const productAPI = async function(method, url, body = null) {
 function initButtons() {
   const fetchProductButton = document.getElementById('fetch-product-button');
   const productNameDisplay = document.getElementById('product-name-display');
+  const updateProductButton = document.getElementById('update-product-button');
+  const productPriceDisplay = document.getElementById('product-price-display');
 
   // Fetch Product.
   fetchProductButton.on('click', function(e) {
@@ -57,5 +59,29 @@ function initButtons() {
     }
   });
 }
+
+// Update Product.
+updateProductButton.on('click', function(e) {
+  e.preventDefault();
+  const productIdInput = document.getElementById('product-input-field');
+  const productPriceInput = document.getElementById('product-price-input');
+  const productNameInput = document.getElementById('product-name-input');
+
+  if (!productIdInput.value || !productInput.value.length) {
+    alert('You must enter a Product ID');
+  } else {
+    console.log('made it here');
+    const response = productAPI('PUT', 'https://example.com/api/', {
+      id: productInput.value,
+        price: productPriceInput.value,
+      name: productNameInput.value
+    });
+    if (reponse.data && response.data.name) {
+      productNameDisplay.value = response.data.name;
+      productPriceDisplay.value = response.data.price;
+    }
+    //console.log('made it here');
+  }
+});
 
 document.addEventListener('DOMContentLoaded', initButtons);

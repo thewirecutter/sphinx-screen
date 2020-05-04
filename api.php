@@ -27,6 +27,10 @@ class ProductAPI
             'name' => null,
             'price' => false,
         ],
+        3 => [
+            'id' => 400,
+            'name' => 'Ryobi RY40250',
+        ],
     ];
 
     /**
@@ -42,6 +46,8 @@ class ProductAPI
         switch ($method) {
             case 'GET':
                 return $this->getProduct($request);
+            case 'PUT':
+                return $this->updateProduct($request);
             default:
                 return $this->response(['message' => 'Error. Unknown request.']);
         }
@@ -64,6 +70,37 @@ class ProductAPI
         $response = $this->query(
             "SELECT * FROM `products` WHERE `id` = {$safe_id} LIMIT 1"
         );
+
+        if (!$response) {
+            return $this->response(['message' => 'Error: product not found']);
+        }
+
+        return $this->response($response);
+    }
+
+    public function updateProduct($request)
+    {
+        if (!isset($request['id']) || !intval($request['id']) > 0) {
+            return $this->response(['message' => 'Error: you must provide a product ID']);
+        }
+
+        $safe_id = intval($request['id']);
+        $name = $request['name'];
+        $price = $request['price'];
+
+        $update = $this->query(
+            "UPDATE `products`
+            SET `name` = {$name}, `price` = {$price}
+            WHERE `id` = {$safe_id}
+            OR `price` = {$price}
+            OR `name`  = {$name}"
+        );
+
+        if ($update) {
+            $response = $this->query(
+                "SELECT * FROM `products` WHERE `id` = {$safe_id} LIMIT 1"
+            );
+        }
 
         if (!$response) {
             return $this->response(['message' => 'Error: product not found']);
